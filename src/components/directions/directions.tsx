@@ -14,10 +14,7 @@ import { RouteCard } from './route-card';
 import { parseUrlParams } from '@/utils/parse-url-params';
 import { isValidCoordinates } from '@/utils/geom';
 import { useNavigate } from '@tanstack/react-router';
-import {
-  defaultWaypoints,
-  useDirectionsStore,
-} from '@/stores/directions-store';
+import { useDirectionsStore } from '@/stores/directions-store';
 import {
   useDirectionsQuery,
   useReverseGeocodeDirections,
@@ -132,9 +129,7 @@ export const DirectionsControl = () => {
             onClick={handleRemoveWaypoints}
             data-testid="reset-waypoints-button"
             className="w-full shrink"
-            disabled={
-              JSON.stringify(waypoints) === JSON.stringify(defaultWaypoints)
-            }
+            disabled={waypoints.every((wp) => !wp.userInput)}
           >
             <MapPinXInside className="size-5" />
             Reset Waypoints
