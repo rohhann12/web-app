@@ -29,6 +29,7 @@ import OSMIcon from '@/images/osm_icon.png';
 import { ToolButton } from './parts/tool-button';
 
 import { MapStyleControl } from './map-style-control';
+import { MapLanguageControl, updateMapLabels } from './map-language-control';
 import { getInitialMapStyle, getCustomStyle, getMapStyleUrl } from './utils';
 import {
   CLICK_DELAY_MS,
@@ -787,7 +788,19 @@ export const MapComponent = () => {
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
         onMoveEnd={handleMoveEnd}
-        onLoad={() => setMapReady(true)}
+        onLoad={() => {
+          setMapReady(true);
+          const lang = localStorage.getItem('map_label_language') ?? 'default';
+          if (lang !== 'default') {
+            updateMapLabels(mapRef.current?.getMap(), lang);
+          }
+        }}
+        onStyleData={() => {
+          const lang = localStorage.getItem('map_label_language') ?? 'default';
+          if (lang !== 'default') {
+            updateMapLabels(mapRef.current?.getMap(), lang);
+          }
+        }}
         onClick={handleMapClick}
         onDblClick={handleMapDblClick}
         onContextMenu={handleMapContextMenu}
@@ -820,6 +833,7 @@ export const MapComponent = () => {
           onStyleChange={handleStyleChange}
           onCustomStyleLoaded={handleCustomStyleLoaded}
         />
+        <MapLanguageControl />
         <RouteLines />
         <HighlightSegment />
         <IsochronePolygons />
