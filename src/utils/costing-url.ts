@@ -12,12 +12,12 @@ function getDefaultSettings(profile: Profile): typeof settingsInit {
   return profile === 'truck' ? settingsInitTruckOverride : settingsInit;
 }
 
-// syncs only the non-default costing options to a json string for use in the url
+// syncs only the non-default costing options to an object for use in the url
 // returns undefined if all settings are at their defaults.
 export function serializeCostingOptions(
   settings: PossibleSettings,
   profile: Profile
-): string | undefined {
+): Record<string, unknown> | undefined {
   const defaults = getDefaultSettings(profile) as PossibleSettings;
   const nonDefault: Record<string, unknown> = {};
 
@@ -33,26 +33,15 @@ export function serializeCostingOptions(
   }
 
   if (Object.keys(nonDefault).length === 0) return undefined;
-  return JSON.stringify(nonDefault);
+  return nonDefault;
 }
 
-// for json parsing
-// if sting is invalid it should return empty obj
+// if the costing param is not a plain object, return empty obj
 export function deserializeCostingOptions(
-  costing: string | undefined
+  costing: Record<string, unknown> | undefined
 ): Partial<PossibleSettings> {
-  if (!costing) return {};
-  try {
-    const parsed: unknown = JSON.parse(costing);
-    if (
-      typeof parsed !== 'object' ||
-      parsed === null ||
-      Array.isArray(parsed)
-    ) {
-      return {};
-    }
-    return parsed as Partial<PossibleSettings>;
-  } catch {
+  if (!costing || typeof costing !== 'object' || Array.isArray(costing)) {
     return {};
   }
+  return costing as Partial<PossibleSettings>;
 }
